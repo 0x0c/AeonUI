@@ -59,7 +59,7 @@ namespace AeonUI
 	class EventListner
 	{
 	private:
-		std::vector<Event *>events[8];
+		std::vector<Event *>events[7];
 
 		bool selected;
 		bool lefted;
@@ -135,24 +135,13 @@ namespace AeonUI
 		void remove();
 	};
 	
-	class Image : public Control
-	{
-	public:
-		uint8_t *image;
-		void setContext(uint8_t *image) {
-			this->image = image;
-		}
-		void draw() {
-			Serial.println("draw image");
-			this->context->drawBitmapP(origin.x, origin.y, size.x, size.y, this->image);
-		}
-	};
-	
 	class Button : public Control
 	{
+	protected:
+		bool selected;
 	public:
 		bool roundRect;
-		bool selected;
+		std::string text;
 		Button(Point origin, Point size) {
 			this->origin = origin;
 			this->size = size;
@@ -164,7 +153,7 @@ namespace AeonUI
 		~Button() {
 			
 		}
-		void eventCall(EventType type);
+		virtual void eventCall(EventType type);
 		virtual void select() {
 			this->selected = true;
 			this->needToDraw();
@@ -179,14 +168,86 @@ namespace AeonUI
 	class Switch : public Button
 	{
 	public:
+		Switch(Point origin, Point size) : Button (origin, size){
+		}
+		~Switch() {
+
+		}
+		virtual void eventCall(EventType type) {
+			if (this->highlighted) {
+				switch (type) {
+					case EventTypeKeySelect: {
+						if (this->selected) {
+							this->off();
+						}
+						else {
+							this->on();
+						}
+					}
+						break;
+					default:
+					break;
+				}
+			}
+		}
+		virtual void select() {
+		}
+		virtual void deselect() {
+		}
 		virtual void on() {
+			Serial.println("on");
+			this->text = "v";
 			this->selected = true;
+			this->needToDraw();
 		}
 		virtual void off() {
-			this->selected = true;
+			Serial.println("off");
+			this->text = "";
+			this->selected = false;
+			this->needToDraw();
 		}
 		void draw() {
+			if (this->highlighted) {
+				this->context->setDefaultBackgroundColor();
+			}
+			else {
+				this->context->setDefaultForegroundColor();
+			}
+			int x = this->origin.x;
+			int y = this->origin.y;
+			int width = this->size.x;
+			int height = this->size.y;
+
+			// border line
+			if (this->roundRect) {
+				this->context->drawRFrame(x, y, width, height, 4);
+			}
+			else {
+				this->context->drawFrame(x, y, width, height);
+			}
+			// inner border line
+			if (this->roundRect) {
+				this->context->drawRFrame(x + 2, y + 2, width - 4, height - 4, 4);
+			}
+			else {
+				this->context->drawFrame(x + 2, y + 2, width - 4, height - 4);
+			}
 			
+			this->context->drawBox(x + 3, y + 3, width - 6, height - 6);
+			if (this->highlighted) {
+				this->context->setDefaultForegroundColor();
+				this->context->drawCircle(x + width / 2, y + height / 2, 6);
+			}
+			else {
+				this->context->setDefaultBackgroundColor();
+				this->context->drawDisc(x + width / 2, y + height / 2, 5);
+				// this->context->drawCircle(x + width / 2, y + height / 2, 4);
+			}
+			// inner content
+			if (this->selected) {
+				this->context->setDefaultForegroundColor();
+				this->context->drawDisc(x + width / 2, y + height / 2, 4);
+			}
 		}
 	};
 	
@@ -219,22 +280,7 @@ namespace AeonUI
 			this->size = Point(128, 32);
 			this->selectedIndex = 0;
 		}
-		void eventCall(EventType type) {
-			switch (type) {
-				case EventTypeKeyRight: {
-					this->prev();
-					Serial.println(this->selectedIndex);
-				}
-					break;
-				case EventTypeKeyLeft: {
-					this->next();
-					Serial.println(this->selectedIndex);
-				}
-					break;
-				default:
-				break;
-			}
-		}
+		void eventCall(EventType type);
 		void add(Control *c) {
 			c->context = this->context;
 			int width = 32;

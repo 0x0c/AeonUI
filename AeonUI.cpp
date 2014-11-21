@@ -3,7 +3,7 @@
 namespace AeonUI
 {
 	void EventListner::add(Event *e) {
-		this->events[e->type].push_back(e);
+		this->events[e->type == 1 ? 0 : e->type].push_back(e);
 	}
 	bool EventListner::listen() {
 		bool result = false;
@@ -116,36 +116,51 @@ namespace AeonUI
 			this->context->drawFrame(x + 2, y + 2, width - 4, height - 4);
 		}
 
-		// inner content
-		if (this->selected) {
-			this->context->setDefaultBackgroundColor();
-		}
 		this->context->drawBox(x + 3, y + 3, width - 6, height - 6);
 		if (this->highlighted) {
 			this->context->setDefaultForegroundColor();
-			this->context->drawCircle(x + width / 2, y + height / 2 - 1, 2);
+			this->context->drawCircle(x + width / 2, y + height / 2, 2);
 		}
 		else {
 			this->context->setDefaultBackgroundColor();
 		}
+		// inner content
+		if (this->selected) {
+			this->context->drawRBox(x + 2, y + 2, width - 4, height - 4, 2);
+		}
+		this->context->drawStr(x + 2, y + height - 2, this->text.c_str());
 	}
 
+	void List::eventCall(EventType type) {
+		switch (type) {
+			case EventTypeKeyRight: {
+				this->prev();
+			}
+				break;
+			case EventTypeKeyLeft: {
+				this->next();
+			}
+				break;
+			default:
+			break;
+		}
+	}
 	void List::draw() {
 		this->context->drawFrame(this->origin.x, this->origin.y, this->size.x, this->size.y);
 		uint8_t height = 32;
 		uint8_t width = 32;
 		int itemCount = this->items.size();
-		int count = 3 > itemCount ? itemCount : 3;
+		int count = 4 > itemCount ? itemCount : 4;
 		for(int i = 0; i < count; i++) {
 			Control *child = this->items.at(i);
 			if (i == this->selectedIndex) {
 				this->context->setDefaultForegroundColor();
-				this->context->drawBox(i * width + 1, 1, width, height);
+				this->context->drawBox(i * width, 0, width, height);
 				child->highlight();
 			}
 			else {
 				this->context->setDefaultForegroundColor();
-				this->context->drawFrame(i * width + 1, 0, width, height);
+				this->context->drawFrame(i * width, 0, width, height);
 				this->context->setDefaultBackgroundColor();
 				child->unhighlight();
 			}
