@@ -11,7 +11,8 @@ namespace AeonUI
 			if (this->selected == false) {
 				for (int i = 0; i < this->events[EventTypeKeySelect].size(); i++) {
 					Event *e = this->events[EventTypeKeySelect].at(i);
-					e->attachedControl->eventCall(EventTypeKeySelect);
+					e->type = EventTypeKeySelect;
+					e->attachedControl->eventCall(e);
 				}
 				this->selected = true;
 				result = true;
@@ -21,7 +22,8 @@ namespace AeonUI
 			this->selected = false;
 			for (int i = 0; i < this->events[EventTypeKeySelect].size(); i++) {
 				Event *e = this->events[EventTypeKeySelect].at(i);
-				e->attachedControl->eventCall(EventTypeKeyDeselect);
+				e->type = EventTypeKeyDeselect;
+				e->attachedControl->eventCall(e);
 			}
 			result = true;
 		}
@@ -30,7 +32,7 @@ namespace AeonUI
 			if (this->lefted == false) {
 				for (int i = 0; i < this->events[EventTypeKeyLeft].size(); i++) {
 					Event *e = this->events[EventTypeKeyLeft].at(i);
-					e->attachedControl->eventCall(EventTypeKeyLeft);
+					e->attachedControl->eventCall(e);
 				}
 				this->lefted = true;
 				result = true;
@@ -75,9 +77,9 @@ namespace AeonUI
 
 	}
 
-	void Button::eventCall(EventType type) {
+	void Button::eventCall(Event *e) {
 		if (this->highlighted) {
-			switch (type) {
+			switch (e->type) {
 				case EventTypeKeySelect:
 					this->select();
 					break;
@@ -87,9 +89,45 @@ namespace AeonUI
 				default:
 				break;
 			}
+			Control::eventCall(e);
 		}
 	}
 	void Button::draw() {
+		this->context->setDefaultForegroundColor();
+		if (this->highlighted) {
+			this->context->setDefaultBackgroundColor();
+		}
+		int x = this->origin.x;
+		int y = this->origin.y;
+		int width = this->size.x;
+		int height = this->size.y;
+
+		if (this->selected) {
+			this->context->drawRBox(x, y, width, height, 4);
+		}
+		// border line
+		if (this->roundRect) {
+			this->context->drawRFrame(x, y, width, height, 4);
+		}
+		else {
+			this->context->drawFrame(x, y, width, height);
+		}
+
+		this->context->setDefaultBackgroundColor();
+		if (this->highlighted) {
+			this->context->setDefaultForegroundColor();
+		}
+
+		this->context->drawBox(x + 3, y + 3, width - 6, height - 6);
+		this->context->setDefaultForegroundColor();
+		if (this->highlighted) {
+			this->context->setDefaultBackgroundColor();
+			this->context->drawHLine(x + 4, y + height - 5, width - 8);
+		}
+		this->context->drawStr(x + 4, y + height / 2, this->text.c_str());
+	}
+
+	void Switch::draw() {
 		if (this->highlighted) {
 			this->context->setDefaultBackgroundColor();
 		}
@@ -115,24 +153,25 @@ namespace AeonUI
 		else {
 			this->context->drawFrame(x + 2, y + 2, width - 4, height - 4);
 		}
-
-		this->context->drawBox(x + 3, y + 3, width - 6, height - 6);
+		
+		// this->context->drawBox(x + 3, y + 3, width - 6, height - 6);
 		if (this->highlighted) {
-			this->context->setDefaultForegroundColor();
-			this->context->drawCircle(x + width / 2, y + height / 2, 2);
-		}
-		else {
 			this->context->setDefaultBackgroundColor();
 		}
+		this->context->drawCircle(x + width / 2, y + height / 2, 7);
+
 		// inner content
 		if (this->selected) {
-			this->context->drawRBox(x + 2, y + 2, width - 4, height - 4, 2);
+			this->context->setDefaultForegroundColor();
+			if (this->highlighted) {
+				this->context->setDefaultBackgroundColor();
+			}
+			this->context->drawDisc(x + width / 2, y + height / 2, 5);
 		}
-		this->context->drawStr(x + 2, y + height - 2, this->text.c_str());
 	}
 
-	void List::eventCall(EventType type) {
-		switch (type) {
+	void List::eventCall(Event *e) {
+		switch (e->type) {
 			case EventTypeKeyRight: {
 				this->prev();
 			}
@@ -144,6 +183,7 @@ namespace AeonUI
 			default:
 			break;
 		}
+		Control::eventCall(e);
 	}
 	void List::draw() {
 		this->context->drawFrame(this->origin.x, this->origin.y, this->size.x, this->size.y);
