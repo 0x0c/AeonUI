@@ -36,13 +36,13 @@ namespace AeonUI
 	};
 
 	typedef enum {
-		EventTypeKeySelect,
-		EventTypeKeyDeselect,
-		EventTypeKeyUp,
-		EventTypeKeyDown,
-		EventTypeKeyLeft,
-		EventTypeKeyRight,
-		EventTypeKeyHome
+		EventTypeKeySelect = 0,
+		EventTypeKeyDeselect = 1,
+		EventTypeKeyUp = 2,
+		EventTypeKeyDown = 3,
+		EventTypeKeyLeft = 4,
+		EventTypeKeyRight = 5,
+		EventTypeKeyHome = 6
 	} EventType;
 	class Event
 	{
@@ -61,18 +61,15 @@ namespace AeonUI
 	private:
 		std::vector<Event *>events[8];
 
-		bool deselected;
+		bool selected;
+		bool lefted;
 	public:
 		EventListner() {
-			this->deselected = true;
 		};
 		~EventListner() {
 		};
 		bool listen();
-		void add(Event *e) {
-			Serial.println("Add event");
-			this->events[EventTypeKeySelect].push_back(e);
-		}
+		void add(Event *e);
 	};
 
 	class Page
@@ -167,18 +164,7 @@ namespace AeonUI
 		~Button() {
 			
 		}
-		virtual void eventCall(EventType type) {
-			switch (type) {
-				case EventTypeKeySelect:
-					this->select();
-					break;
-				case EventTypeKeyDeselect:
-					this->deselect();
-					break;
-				default:
-				break;
-			}
-		}
+		void eventCall(EventType type);
 		virtual void select() {
 			this->selected = true;
 			this->needToDraw();
@@ -216,6 +202,7 @@ namespace AeonUI
 		~Label() {
 		}
 		void draw() {
+			this->context->setDefaultForegroundColor();
 			this->context->drawStr(this->position.x, this->position.y, this->text.c_str());
 		}
 	};
@@ -228,15 +215,21 @@ namespace AeonUI
 		std::vector<Control *> items;
 		int selectedIndex;
 		List() {
+			this->origin = Point(0, 0);
+			this->size = Point(128, 32);
 			this->selectedIndex = 0;
 		}
-		virtual void eventCall(EventType type) {
+		void eventCall(EventType type) {
 			switch (type) {
-				case EventTypeKeySelect:
-					this->next();
-					break;
-				case EventTypeKeyDeselect:
+				case EventTypeKeyRight: {
 					this->prev();
+					Serial.println(this->selectedIndex);
+				}
+					break;
+				case EventTypeKeyLeft: {
+					this->next();
+					Serial.println(this->selectedIndex);
+				}
 					break;
 				default:
 				break;
@@ -244,47 +237,22 @@ namespace AeonUI
 		}
 		void add(Control *c) {
 			c->context = this->context;
+			int width = 32;
+			c->origin = Point(this->items.size() * width + 1, 0);
 			this->items.push_back(c);
-			this->origin = Point(0, 0);
-			this->size = Point(128, 32);
 		}
 		void next() {
-			this->selectedIndex++;
+			this->selectedIndex = (this->selectedIndex + 1) % this->items.size();
 			this->needToDraw();
 		}
 		void prev() {
-			this->selectedIndex--;
+			this->selectedIndex = (this->selectedIndex - 1) % this->items.size();
 			this->needToDraw();
 		}
-		void draw() {
-			this->context->drawFrame(this->origin.x, this->origin.y, this->size.x, this->size.y);
-			uint8_t height = 32;
-			uint8_t width = 32;
-			int count = 3 > this->items.size() ? this->items.size() : 3;
-			int index = 0;
-			for(int i = selectedIndex; i < count; i++) {
-				// draw frame
-				this->context->setDefaultForegroundColor();
-				this->context->drawFrame(i * width + 1, 0, width, height);
-
-				// draw all menu items
-				Control *child = this->items.at(index);
-				if (i == this->selectedIndex) {
-					child->highlight();
-					// current selected menu item
-					// draw cursor bar
-					this->context->drawBox(i * width + 1, 0, width, height);
-					this->context->setDefaultBackgroundColor();
-				}
-				else {
-					child->unhighlight();
-				}
-
-				// draw child
-				child->origin = Point(i * width + 1, 0);
-				child->draw();
-				index++;
-			}
+		void select() {
+			Control *child = this->items.at(this->selectedIndex);
+			this->select();
 		}
+		void draw();
 	};
 };
