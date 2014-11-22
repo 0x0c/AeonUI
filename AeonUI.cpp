@@ -102,9 +102,6 @@ namespace AeonUI
 		int width = this->size.x;
 		int height = this->size.y;
 
-		if (this->selected) {
-			this->context->drawRBox(x, y, width, height, 4);
-		}
 		// border line
 		if (this->roundRect) {
 			this->context->drawRFrame(x, y, width, height, 4);
@@ -113,16 +110,22 @@ namespace AeonUI
 			this->context->drawFrame(x, y, width, height);
 		}
 
-		this->context->setDefaultBackgroundColor();
-		if (this->highlighted) {
+		if (this->selected) {
+			this->context->setDefaultBackgroundColor();
+			this->context->drawRBox(x, y, width, height, 4);
 			this->context->setDefaultForegroundColor();
+			this->context->drawRFrame(x + 1, y + 1, width - 2, height - 2, 4);
 		}
 
-		this->context->drawBox(x + 3, y + 3, width - 6, height - 6);
-		this->context->setDefaultForegroundColor();
+		this->context->setDefaultBackgroundColor();
+		if (this->selected) {
+			this->context->setDefaultForegroundColor();
+		}
 		if (this->highlighted) {
-			this->context->setDefaultBackgroundColor();
 			this->context->drawHLine(x + 4, y + height - 5, width - 8);
+		}
+		else {
+			this->context->setDefaultForegroundColor();
 		}
 		this->context->drawStr(x + 4, y + height / 2, this->text.c_str());
 	}
@@ -154,7 +157,6 @@ namespace AeonUI
 			this->context->drawFrame(x + 2, y + 2, width - 4, height - 4);
 		}
 		
-		// this->context->drawBox(x + 3, y + 3, width - 6, height - 6);
 		if (this->highlighted) {
 			this->context->setDefaultBackgroundColor();
 		}

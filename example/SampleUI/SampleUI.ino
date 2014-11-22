@@ -29,12 +29,12 @@ AeonUI::Page page;
 
 void buttonSelected(EventType type, Control *c)
 {
-
+	Serial.println("1");
 }
 
 void switchValueChanged(EventType type, Control *c)
 {
-
+	Serial.println("2");
 }
 
 void draw()
@@ -83,7 +83,7 @@ void setup(void)
 	Switch *s = new Switch(Point(21, 0), Point(30, 30));
 	page.listner.add(new Event(s, EventTypeKeySelect, switchValueChanged));
 	s->roundRect = true;
-	s->identifier = 4;
+	s->identifier = 3;
 	list->add(s);
 
 	Image *i = new Image(Point(5, 5), Point(28, 28));
