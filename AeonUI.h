@@ -91,8 +91,9 @@ namespace AeonUI
 		};
 		~Page() {
 		};
-		void selectNextControl();
-		void selectPreviousControl();
+		void selectControl();
+		void moveToNextControl();
+		void moveToPreviousControl();
 		bool needToRefresh() {
 			return refresh || listner.listen();
 		};
@@ -139,6 +140,8 @@ namespace AeonUI
 			this->highlighted = false;
 			this->needToDraw();
 		}
+		virtual void select() {
+		}
 		virtual void draw() {
 		}
 		void remove();
@@ -183,12 +186,7 @@ namespace AeonUI
 			if (this->highlighted) {
 				switch (e->type) {
 					case EventTypeKeySelect: {
-						if (this->selected) {
-							this->off();
-						}
-						else {
-							this->on();
-						}
+						this->select();
 					}
 						break;
 					default:
@@ -197,16 +195,11 @@ namespace AeonUI
 				Control::eventCall(e);
 			}
 		}
-		virtual void select() {}
+		virtual void select() {
+			this->selected = !this->selected;
+			this->needToDraw();
+		}
 		virtual void deselect() {}
-		virtual void on() {
-			this->selected = true;
-			this->needToDraw();
-		}
-		virtual void off() {
-			this->selected = false;
-			this->needToDraw();
-		}
 		void draw();
 	};
 	

@@ -45,22 +45,23 @@ namespace AeonUI
 		return result;
 	}
 
-	void Page::selectNextControl() {
+	void Page::moveToNextControl() {
 		Control *c = this->hieralchy.at(this->selectedControl);
 		c->unhighlight();
-		this->selectedControl++;
+		this->selectedControl = (this->selectedControl + 1) % this->hieralchy.size();;
 		c = this->hieralchy.at(this->selectedControl);
 		c->highlight();
+		this->refresh = true;
 	};
-	void Page::selectPreviousControl() {
+	void Page::moveToPreviousControl() {
 		Control *c = this->hieralchy.at(this->selectedControl);
 		c->unhighlight();
-		this->selectedControl--;
+		this->selectedControl = (this->selectedControl - 1) % this->hieralchy.size();
 		c = this->hieralchy.at(this->selectedControl);
 		c->highlight();
+		this->refresh = true;
 	};
 	void Page::draw() {
-		Serial.println("Page::draw");
 		for (int i = 0; i < this->hieralchy.size(); i++) {
 			Control *c = this->hieralchy.at(i);
 			c->draw();
@@ -95,14 +96,16 @@ namespace AeonUI
 		}
 	}
 	void Button::draw() {
-		this->context->setDefaultForegroundColor();
-		if (this->highlighted) {
-			this->context->setDefaultBackgroundColor();
-		}
 		int x = this->origin.x;
 		int y = this->origin.y;
 		int width = this->size.x;
 		int height = this->size.y;
+
+		this->context->setDefaultForegroundColor();
+		if (this->highlighted) {
+			this->context->drawBox(x, y, width, height);
+			this->context->setDefaultBackgroundColor();
+		}
 
 		// border line
 		if (this->roundRect) {
@@ -133,14 +136,16 @@ namespace AeonUI
 	}
 
 	void Switch::draw() {
-		this->context->setDefaultForegroundColor();
-		if (this->highlighted) {
-			this->context->setDefaultBackgroundColor();
-		}
 		int x = this->origin.x;
 		int y = this->origin.y;
 		int width = this->size.x;
 		int height = this->size.y;
+
+		this->context->setDefaultForegroundColor();
+		if (this->highlighted) {
+			this->context->drawBox(x, y, width, height);
+			this->context->setDefaultBackgroundColor();
+		}
 
 		// border line
 		if (this->roundRect) {
