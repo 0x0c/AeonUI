@@ -47,23 +47,25 @@ namespace AeonUI
 
 	void Page::selectNextControl() {
 		Control *c = this->hieralchy.at(this->selectedControl);
-		// c->unhighlight();
+		c->unhighlight();
 		this->selectedControl++;
 		c = this->hieralchy.at(this->selectedControl);
-		// c->highlight();
+		c->highlight();
 	};
 	void Page::selectPreviousControl() {
 		Control *c = this->hieralchy.at(this->selectedControl);
-		// c->unhighlight();
+		c->unhighlight();
 		this->selectedControl--;
 		c = this->hieralchy.at(this->selectedControl);
-		// c->highlight();
+		c->highlight();
 	};
 	void Page::draw() {
+		Serial.println("Page::draw");
 		for (int i = 0; i < this->hieralchy.size(); i++) {
 			Control *c = this->hieralchy.at(i);
 			c->draw();
 		}
+		this->context->setDefaultForegroundColor();
 		this->refresh = false;
 	}
 	void Page::add(Control *c) {
@@ -131,11 +133,9 @@ namespace AeonUI
 	}
 
 	void Switch::draw() {
+		this->context->setDefaultForegroundColor();
 		if (this->highlighted) {
 			this->context->setDefaultBackgroundColor();
-		}
-		else {
-			this->context->setDefaultForegroundColor();
 		}
 		int x = this->origin.x;
 		int y = this->origin.y;

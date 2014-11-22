@@ -140,7 +140,6 @@ namespace AeonUI
 			this->needToDraw();
 		}
 		virtual void draw() {
-			Serial.println("draw conrtol");
 		}
 		void remove();
 	};
@@ -152,6 +151,7 @@ namespace AeonUI
 		std::string text;
 		Button(Point origin, Point size) : Control(origin, size){
 			this->selected = false;
+			this->highlighted = false;
 		}
 		Button() : Control() {
 			this->selected = false;

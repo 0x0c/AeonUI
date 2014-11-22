@@ -25,7 +25,7 @@ const uint8_t tool_icon_image[] U8G_PROGMEM = {
   0x3C, 0x00, 0xE0, 0x00
 };
 
-AeonUI::Page page;
+Page page;
 
 void buttonSelected(EventType type, Control *c)
 {
@@ -60,35 +60,36 @@ void setup(void)
 	
 	page.context = &u8g;
 
-	List *list = new List();
-	page.listner.add(new Event(list, EventTypeKeyLeft, NULL));
-	page.listner.add(new Event(list, EventTypeKeyRight, NULL));
-	page.add(list);
+	// List *list = new List();
+	// page.listner.add(new Event(list, EventTypeKeyLeft, NULL));
+	// page.listner.add(new Event(list, EventTypeKeyRight, NULL));
+	// page.add(list);
 
 	Button *c = new Button(Point(0, 0), Point(30, 30));
 	page.listner.add(new Event(c, EventTypeKeySelect, buttonSelected));
 	c->identifier = 1;
 	c->roundRect = true;
 	c->text = "btn1";
-	list->add(c);
-	// page.add(c);
+	// list->add(c);
+	page.add(c);
 
-	Button *c2 = new Button(Point(0, 0), Point(30, 30));
+	Button *c2 = new Button(Point(31, 0), Point(30, 30));
 	page.listner.add(new Event(c2, EventTypeKeySelect, buttonSelected));
 	c2->identifier = 2;
 	c2->text = "btn2";
-	list->add(c2);
+	// list->add(c2);
+	page.add(c2);
 
-	// Switch *s = new Switch(Point(21, 0), Point(15, 15));
-	Switch *s = new Switch(Point(21, 0), Point(30, 30));
-	page.listner.add(new Event(s, EventTypeKeySelect, switchValueChanged));
-	s->roundRect = true;
-	s->identifier = 3;
-	list->add(s);
+	// // Switch *s = new Switch(Point(21, 0), Point(15, 15));
+	// Switch *s = new Switch(Point(21, 0), Point(30, 30));
+	// page.listner.add(new Event(s, EventTypeKeySelect, switchValueChanged));
+	// s->roundRect = true;
+	// s->identifier = 3;
+	// list->add(s);
 
-	Image *i = new Image(Point(5, 5), Point(28, 28));
-	i->image = (uint8_t*)tool_icon_image;
-	list->add(i);
+	// Image *i = new Image(Point(5, 5), Point(28, 28));
+	// i->image = (uint8_t*)tool_icon_image;
+	// list->add(i);
 
 	// Label *l = new Label(Point(3, 30), "Hello");
 	// page.add(l);
@@ -99,6 +100,7 @@ void loop(void)
 	if (page.needToRefresh()) {
 		u8g.firstPage();
 		do {
+			u8g.drawLine(0, 0, 128, 31);
 			draw();
 		} while(u8g.nextPage());
 	}
