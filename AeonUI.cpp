@@ -62,10 +62,16 @@ namespace AeonUI
 		this->refresh = true;
 	};
 	void Page::draw() {
-		for (int i = 0; i < this->hieralchy.size(); i++) {
-			Control *c = this->hieralchy.at(i);
-			c->draw();
+		if (notification == false) {
+			for (int i = 0; i < this->hieralchy.size(); i++) {
+				Control *c = this->hieralchy.at(i);
+				c->draw();
+			}
 		}
+		else {
+			this->notification->draw();
+		}
+		
 		this->context->setDefaultForegroundColor();
 		this->refresh = false;
 	}
@@ -75,6 +81,11 @@ namespace AeonUI
 		this->hieralchy.push_back(c);
 		this->refresh = true;
 	}
+	void Page::postNotification(Notification *n) {
+		this->notification = n;
+		this->notification->context = this->context;
+		this->showNotification = true;
+	};
 
 	void Control::remove() {
 

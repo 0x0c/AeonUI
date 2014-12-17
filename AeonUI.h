@@ -4,13 +4,32 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <iostream>
+#include <sstream>
 #include "U8glib.h"
 #include <Arduino.h>
 
 namespace AeonUI
 {
+	class Util
+	{
+	public:
+		static std::vector<std::string> split(const std::string &str, char delim)
+		{
+			std::vector<std::string> res;
+			size_t current = 0, found;
+			while((found = str.find_first_of(delim, current)) != std::string::npos){
+				res.push_back(std::string(str, current, found - current));
+				current = found + 1;
+			}
+			res.push_back(std::string(str, current, str.size() - current));
+
+			return res;
+		}
+	};
 	// prototype
 	class Control;
+	class Notification;
 
 	class Point
 	{
@@ -79,12 +98,14 @@ namespace AeonUI
 		int globalIdentifierCounter;
 		std::vector<Control *> hieralchy;
 	public:
+		bool showNotification;
 		int selectedControl;
 		Point origin;
 		Point size;
 		bool refresh;
 		EventListner listner;
 		U8GLIB *context;
+		Notification *notification;
 
 		Page() {
 			this->refresh = true;
@@ -100,6 +121,10 @@ namespace AeonUI
 		void add(Control *c);
 		void remove();
 		void draw();
+		void postNotification(Notification *n);
+		void revokeNotification() {
+			this->showNotification = false;
+		}
 	};
 
 	class Control
@@ -216,10 +241,36 @@ namespace AeonUI
 		}
 		void draw() {
 			this->context->setDefaultForegroundColor();
-			this->context->drawStr(this->position.x, this->position.y, this->text.c_str());
+		    std::vector<std::string> result = Util::split(this->text, '\n');
+		    for (int i = 0; i < result.size(); i++) {
+				std::string s = result.at(i);
+				this->context->drawStr(this->position.x, this->position.y + (i * this->context->getFontLineSpacing()), s.c_str());
+			}
 		}
 	};
 	
+	class Notification : public Control
+	{
+		std::string title;
+		std::string body;
+	public:
+		Notification(std::string title, std::string body) {
+			this->title = title;
+			this->body = body;
+		}
+		~Notification() {
+		}
+		void draw() {
+			this->context->drawStr(0, 0, this->title.c_str());
+			std::vector<std::string> result = Util::split(this->body, '\n');
+			this->context->drawLine(0, this->context->getFontLineSpacing(), 128, this->context->getFontLineSpacing());
+			for (int i = 0; i < result.size(); i++) {
+				std::string s = result.at(i);
+				this->context->drawStr(0, this->context->getFontLineSpacing() + 1 + (i * this->context->getFontLineSpacing()), s.c_str());
+			}
+		}
+	};
+
 	class List : public Control
 	{
 	private:
