@@ -1,5 +1,10 @@
 #pragma once
 
+#include "Point.h"
+#include "Event.h"
+#include "Notification.h"
+#include "U8glib.h"
+
 namespace AeonUI
 {
 	class Surface

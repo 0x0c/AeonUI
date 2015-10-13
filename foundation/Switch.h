@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Button.h"
+
 namespace AeonUI
 {
 	class Switch : public Button

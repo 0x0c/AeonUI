@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Control.h"
+#include "Notification.h"
+
 namespace AeonUI
 {
 	// prototype

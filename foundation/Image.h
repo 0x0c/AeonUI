@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Control.h"
+
 namespace AeonUI
 {
 	class Image : public Control
