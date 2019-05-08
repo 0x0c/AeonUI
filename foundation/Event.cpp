@@ -36,17 +36,17 @@ namespace AeonUI
 		}
 
 		if (PIND & _BV(6)) {
-			if (this->lefted == false) {
+			if (this->left == false) {
 				for (int i = 0; i < this->events[EventTypeKeyLeft].size(); i++) {
 					Event *e = this->events[EventTypeKeyLeft].at(i);
 					e->attachedControl->eventCall(e);
 				}
-				this->lefted = true;
+				this->left = true;
 				result = true;
 			}
 		}
 		else {
-			this->lefted = false;
+			this->left = false;
 		}
 
 		return result;

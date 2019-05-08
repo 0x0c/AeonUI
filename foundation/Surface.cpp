@@ -52,7 +52,7 @@ namespace AeonUI
 	}
 
 	Surface::bool needToRefresh() {
-		return refresh || listner.listen();
+		return refresh || listener.listen();
 
 
 	Surface::void revokeNotification() {

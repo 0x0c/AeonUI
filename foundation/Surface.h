@@ -30,7 +30,7 @@ namespace AeonUI
 		Point origin;
 		Point size;
 		bool refresh;
-		EventListner listner;
+		EventListner listener;
 		U8GLIB *context;
 		Notification *notification;
 	};

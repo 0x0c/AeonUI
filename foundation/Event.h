@@ -40,7 +40,7 @@ namespace AeonUI
 		std::vector<Event *>events[7];
 
 		bool selected;
-		bool lefted;
+		bool left;
 	public:
 		EventListner() {};
 		~EventListner() {};
