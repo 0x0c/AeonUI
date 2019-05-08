@@ -61,12 +61,12 @@ void setup(void)
 	page.context = &u8g;
 
 	// List *list = new List();
-	// page.listner.add(new Event(list, EventTypeKeyLeft, NULL));
-	// page.listner.add(new Event(list, EventTypeKeyRight, NULL));
+	// page.listener.add(new Event(list, EventTypeKeyLeft, NULL));
+	// page.listener.add(new Event(list, EventTypeKeyRight, NULL));
 	// page.add(list);
 
 	Button *c = new Button(Point(0, 0), Point(30, 30));
-	page.listner.add(new Event(c, EventTypeKeySelect, buttonSelected));
+	page.listener.add(new Event(c, EventTypeKeySelect, buttonSelected));
 	c->identifier = 1;
 	c->roundRect = true;
 	c->text = "btn1";
@@ -74,7 +74,7 @@ void setup(void)
 	page.add(c);
 
 	Button *c2 = new Button(Point(31, 0), Point(30, 30));
-	page.listner.add(new Event(c2, EventTypeKeySelect, buttonSelected));
+	page.listener.add(new Event(c2, EventTypeKeySelect, buttonSelected));
 	c2->identifier = 2;
 	c2->text = "btn2";
 	// list->add(c2);
@@ -82,7 +82,7 @@ void setup(void)
 
 	// // Switch *s = new Switch(Point(21, 0), Point(15, 15));
 	// Switch *s = new Switch(Point(21, 0), Point(30, 30));
-	// page.listner.add(new Event(s, EventTypeKeySelect, switchValueChanged));
+	// page.listener.add(new Event(s, EventTypeKeySelect, switchValueChanged));
 	// s->roundRect = true;
 	// s->identifier = 3;
 	// list->add(s);
